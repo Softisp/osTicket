@@ -1,0 +1,31 @@
+image:
+  repository: ghcr.io/softisp/osticket
+  tag: "1.17.8"
+  pullPolicy: IfNotPresent
+imagePullSecrets: [{name: regcred}]
+
+ingress:
+  enabled: true
+  className: haproxy
+  host: helpdesk.zabbuli.com
+  tlsSecretName: zabbuli-tls   # existing *.zabbuli.com wildcard secret in the release namespace
+  annotations:
+    haproxy.org/response-set-header: Strict-Transport-Security "max-age=15768000; includeSubDomains"
+
+config:   # osTicket ost-config.php volume
+  size: 1Gi
+  storageClass: hcloud-volumes
+
+mariadb:
+  image: mariadb:10.11
+  database: osticket
+  user: osticket
+  size: 10Gi
+  storageClass: hcloud-volumes
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {memory: 1Gi}
+
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+  limits: {memory: 768Mi}
